@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://pdf-problembook-cutter-kr.hyeonjune-jang.chatgpt.site'),
   title: '문제집 커터 · PDF를 내 학습지로',
   description: '두 단 PDF에서 문제를 골라 풀이 공간이 있는 A4 문제집으로 만드는 브라우저 도구',
   openGraph: {
