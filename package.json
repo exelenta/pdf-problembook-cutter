@@ -14,7 +14,7 @@
     "check": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
-    "next": "16.2.6",
+    "next": "^16.3.3",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.624",
     "react": "19.2.6",
@@ -31,7 +31,7 @@
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
     "eslint": "9.39.4",
-    "eslint-config-next": "16.2.6",
+    "eslint-config-next": "^16.3.3",
     "react-server-dom-webpack": "19.2.6",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
