@@ -5,8 +5,6 @@ export interface CropPreset {
   left: number;
   divider: number;
   right: number;
-  top: number;
-  bottom: number;
 }
 
 export interface Marker {
@@ -38,8 +36,6 @@ export const DEFAULT_CROP: CropPreset = {
   left: 5,
   divider: 50,
   right: 5,
-  top: 4,
-  bottom: 4,
 };
 
 const cellKey = (page: number, column: Column) => `${page}:${column}`;
@@ -47,7 +43,6 @@ const cellKey = (page: number, column: Column) => `${page}:${column}`;
 export function deriveProblems(
   markers: Marker[],
   pageCount: number,
-  cropForPage: (page: number) => CropPreset,
 ): DeriveResult {
   const byCell = new Map<string, Marker[]>();
   for (const marker of markers) {
@@ -69,9 +64,8 @@ export function deriveProblems(
   };
 
   for (let page = 1; page <= pageCount; page += 1) {
-    const crop = cropForPage(page);
-    const top = crop.top / 100;
-    const bottom = 1 - crop.bottom / 100;
+    const top = 0;
+    const bottom = 1;
     for (const column of ['left', 'right'] as const) {
       const list = byCell.get(cellKey(page, column)) ?? [];
       let cursor: number | null = open && resumesAtNextCell ? top : null;

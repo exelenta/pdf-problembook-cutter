@@ -14,12 +14,15 @@ interface GenerateOptions {
   appendixStart?: number;
   appendixEnd?: number;
   title: string;
+  titleImage?: Uint8Array;
+  showProblemNumbers: boolean;
 }
 
 export async function generateProblembook(options: GenerateOptions) {
   const sourcePdf = await PDFDocument.load(options.source, { ignoreEncryption: false });
   const output = await PDFDocument.create();
   const font = await output.embedFont(StandardFonts.Helvetica);
+  const embeddedTitle = options.titleImage ? await output.embedPng(options.titleImage) : null;
   const margin = 12 * MM;
   const gap = 7 * MM;
   const columnWidth = (A4_WIDTH - margin * 2 - gap) / 2;
@@ -28,6 +31,19 @@ export async function generateProblembook(options: GenerateOptions) {
   let outPage = output.addPage([A4_WIDTH, A4_HEIGHT]);
   let outColumn = 0;
   let cursorTop = margin;
+
+  if (embeddedTitle) {
+    const original = embeddedTitle.scale(1);
+    const titleHeight = Math.min(30, (A4_WIDTH - margin * 2) * original.height / original.width);
+    const titleWidth = original.width * titleHeight / original.height;
+    outPage.drawImage(embeddedTitle, {
+      x: margin,
+      y: A4_HEIGHT - margin - titleHeight,
+      width: titleWidth,
+      height: titleHeight,
+    });
+    cursorTop += titleHeight + 12;
+  }
 
   const advance = () => {
     if (outColumn === 0) outColumn = 1;
@@ -63,14 +79,16 @@ export async function generateProblembook(options: GenerateOptions) {
 
     const x = margin + outColumn * (columnWidth + gap);
     let yTop = cursorTop;
-    outPage.drawText(String(problem.id).padStart(2, '0'), {
-      x,
-      y: A4_HEIGHT - yTop - 8,
-      size: 7,
-      font,
-      color: rgb(0.12, 0.42, 0.31),
-    });
-    yTop += 12;
+    if (options.showProblemNumbers) {
+      outPage.drawText(String(problem.id), {
+        x,
+        y: A4_HEIGHT - yTop - 8,
+        size: 7,
+        font,
+        color: rgb(0.12, 0.42, 0.31),
+      });
+      yTop += 12;
+    }
 
     for (const item of measurements) {
       const embedded = await output.embedPage(item.page, {
