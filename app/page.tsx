@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type PointerEvent } from 'react';
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist/types/src/display/api';
-import pdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 import { DEFAULT_CROP, deriveProblems, type CropPreset, type Marker, type MarkerType } from '@/lib/problembook';
 import { getShortcutAction } from '@/lib/shortcuts';
 
@@ -217,7 +216,10 @@ export default function Home() {
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+      pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+        import.meta.url,
+      ).toString();
       const document = await pdfjs.getDocument({ data: bytes.slice() }).promise;
       const entries = await extractOutline(document);
       await pdfDoc?.destroy();
